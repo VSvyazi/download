@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скачивание</title>
+</head>
+<body>
+    <script>
+        // detect platform (win,mac,ios,android) and redirect to app store
+        const platform = navigator.platform;
+        if (platform.includes('Win')) {
+            window.location.href = 'https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x64.exe';
+        } else if (platform.includes('Mac')) {
+            window.location.href = 'https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973';
+        } else if (platform.includes('iPhone') || platform.includes('iPad')) {
+            window.location.href = 'https://apps.apple.com/app/id6744444444';
+        } else if (platform.includes('Android')) {
+            window.location.href = 'https://play.google.com/store/apps/details?id=com.happproxy';
+        }
+    </script>
+</body>
+</html>
