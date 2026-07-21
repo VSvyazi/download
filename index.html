@@ -1,23 +1,599 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скачивание</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f6f2">
+  <meta name="description" content="Скачайте подходящий клиент для подключения на Windows, macOS, iOS или Android.">
+  <title>Скачать приложение</title>
+  <style>
+    :root {
+      --ink: #17211d;
+      --muted: #68736d;
+      --paper: #f5f6f2;
+      --card: #ffffff;
+      --line: #dde2dc;
+      --accent: #c8f064;
+      --accent-strong: #aee22e;
+      --dark: #1b2521;
+      --shadow: 0 22px 70px rgba(32, 47, 40, .08);
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 2%, rgba(200, 240, 100, .27), transparent 27rem),
+        radial-gradient(circle at 96% 35%, rgba(171, 215, 239, .22), transparent 28rem),
+        var(--paper);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid rgba(74, 110, 22, .38);
+      outline-offset: 3px;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 72px 0 56px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 20px;
+      padding: 8px 13px;
+      border: 1px solid rgba(23, 33, 29, .09);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .62);
+      color: #425047;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      backdrop-filter: blur(12px);
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-strong);
+      box-shadow: 0 0 0 4px rgba(174, 226, 46, .2);
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 76px);
+      font-weight: 730;
+      letter-spacing: -.055em;
+      line-height: .98;
+    }
+
+    .lead {
+      max-width: 610px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 20px);
+      line-height: 1.55;
+    }
+
+    .section { margin-top: 68px; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .step {
+      display: block;
+      margin-bottom: 6px;
+      color: #77817c;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(25px, 3vw, 34px);
+      letter-spacing: -.035em;
+      line-height: 1.15;
+    }
+
+    .detected {
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .platform {
+      position: relative;
+      display: flex;
+      aspect-ratio: 1 / 1;
+      min-height: 176px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: rgba(255, 255, 255, .78);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .platform::after {
+      position: absolute;
+      right: -38px;
+      bottom: -52px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(200, 240, 100, .35);
+      content: "";
+      transform: scale(.55);
+      opacity: 0;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .platform:hover {
+      transform: translateY(-3px);
+      border-color: #c8cec7;
+      box-shadow: 0 14px 40px rgba(34, 49, 42, .07);
+    }
+
+    .platform.active {
+      border-color: var(--dark);
+      color: #fff;
+      background: var(--dark);
+      box-shadow: 0 18px 45px rgba(27, 37, 33, .18);
+    }
+
+    .platform.active::after { transform: scale(1); opacity: 1; }
+
+    .platform-icon {
+      position: relative;
+      z-index: 1;
+      width: 48px;
+      height: 48px;
+    }
+
+    .platform-name {
+      position: relative;
+      z-index: 1;
+      font-size: 19px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .platform-status {
+      position: absolute;
+      z-index: 2;
+      top: 20px;
+      right: 20px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .platform.active .platform-status { display: flex; }
+
+    .status-check {
+      display: grid;
+      width: 18px;
+      height: 18px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--dark);
+      background: var(--accent);
+    }
+
+    .clients {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .client {
+      display: flex;
+      min-height: 172px;
+      align-items: center;
+      gap: 20px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 1px 0 rgba(255,255,255,.7) inset;
+      animation: card-in .36s both;
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .client-logo {
+      display: grid;
+      width: 72px;
+      height: 72px;
+      flex: 0 0 72px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 21px;
+      color: #fff;
+      background: var(--logo-bg, #222);
+      box-shadow: 0 12px 25px color-mix(in srgb, var(--logo-bg, #222) 24%, transparent);
+    }
+
+    .client-logo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .client-body { min-width: 0; flex: 1; }
+
+    .client-title-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 7px;
+    }
+
+    .client h3 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.025em;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #3a5111;
+      background: #eafabe;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .client p {
+      min-height: 42px;
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .region-note {
+      display: inline-block;
+      margin-top: 5px;
+      color: #9a5b12;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .download-link {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 10px 15px;
+      border-radius: 13px;
+      color: #fff;
+      background: var(--dark);
+      font-size: 14px;
+      font-weight: 720;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .download-link:hover { transform: translateY(-1px); background: #2d3a34; }
+    .download-link svg { width: 16px; height: 16px; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 34px;
+      border: 1px dashed #cbd1ca;
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 255, 255, .55);
+    }
+
+    .note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .note-icon {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      place-items: center;
+      border-radius: 50%;
+      color: #4c6423;
+      background: rgba(200, 240, 100, .4);
+      font-weight: 800;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 76px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: #7b847f;
+      font-size: 12px;
+    }
+
+    @media (max-width: 780px) {
+      .page { width: min(100% - 28px, 620px); padding-top: 46px; }
+      .section { margin-top: 52px; }
+      .section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .platforms { grid-template-columns: repeat(2, 1fr); }
+      .platform { min-height: 150px; padding: 18px; border-radius: 23px; }
+      .platform-status { top: 17px; right: 17px; }
+      .clients { grid-template-columns: 1fr; }
+      .client { min-height: 156px; padding: 20px; border-radius: 23px; }
+    }
+
+    @media (max-width: 430px) {
+      .page { width: calc(100% - 22px); }
+      h1 { font-size: 42px; }
+      .lead { font-size: 16px; }
+      .platforms { gap: 9px; }
+      .platform { min-height: 137px; padding: 16px; }
+      .platform-icon { width: 40px; height: 40px; }
+      .platform-status span:last-child { display: none; }
+      .client { align-items: flex-start; gap: 15px; padding: 18px; }
+      .client-logo { width: 58px; height: 58px; flex-basis: 58px; border-radius: 17px; }
+      .client-title-row { flex-wrap: wrap; }
+      footer { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-    <script>
-        // detect platform (win,mac,ios,android) and redirect to app store
-        const platform = navigator.platform;
-        if (platform.includes('Win')) {
-            window.location.href = 'https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x64.exe';
-        } else if (platform.includes('Mac')) {
-            window.location.href = 'https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973';
-        } else if (platform.includes('iPhone') || platform.includes('iPad')) {
-            window.location.href = 'https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973';
-        } else if (platform.includes('Android')) {
-            window.location.href = 'https://play.google.com/store/apps/details?id=com.happproxy';
+  <main class="page">
+    <header>
+      <div class="eyebrow"><span class="eyebrow-dot"></span>Клиенты для подключения</div>
+      <h1>Скачайте приложение для вашего устройства</h1>
+      <p class="lead">Выберите платформу, а затем любой удобный клиент. Все приложения поддерживают добавление ключа подписки.</p>
+    </header>
+
+    <section class="section" aria-labelledby="platform-heading">
+      <div class="section-head">
+        <div>
+          <span class="step">Шаг 01</span>
+          <h2 id="platform-heading">Выберите платформу</h2>
+        </div>
+        <p class="detected" id="detected-label" aria-live="polite"></p>
+      </div>
+
+      <div class="platforms" aria-label="Платформы">
+        <button class="platform" type="button" data-platform="windows" aria-pressed="false">
+          <svg class="platform-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M4 8.7 21.4 6.3v16.8H4V8.7Zm19.6-2.8L44 3v20.1H23.6V5.9ZM4 25.2h17.4V42L4 39.6V25.2Zm19.6 0H44V45l-20.4-2.8v-17Z"/></svg>
+          <span class="platform-status"><span class="status-check">✓</span><span>Выбрано</span></span>
+          <span class="platform-name">Windows</span>
+        </button>
+        <button class="platform" type="button" data-platform="macos" aria-pressed="false">
+          <svg class="platform-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M32.1 8.2c2-2.4 1.8-4.6 1.8-5.2-1.9.1-4.2 1.3-5.5 2.8-1.5 1.6-2.3 3.5-2.1 5.5 2.1.2 4.2-.9 5.8-3.1ZM39.7 27.9c0-6.1 5-9 5.2-9.2-2.8-4.2-7.3-4.7-8.9-4.8-3.8-.4-7.4 2.2-9.3 2.2-2 0-4.9-2.2-8.1-2.1-4.1.1-8 2.4-10.1 6.1-4.3 7.5-1.1 18.6 3.1 24.6 2 3 4.4 6.2 7.6 6.1 3-.1 4.2-2 7.9-2s4.7 2 7.9 1.9c3.3 0 5.4-3 7.4-6 2.4-3.5 3.3-6.9 3.4-7.1-.1 0-6.1-2.4-6.1-9.7Z" transform="scale(.82) translate(5 -1)"/></svg>
+          <span class="platform-status"><span class="status-check">✓</span><span>Выбрано</span></span>
+          <span class="platform-name">macOS</span>
+        </button>
+        <button class="platform" type="button" data-platform="ios" aria-pressed="false">
+          <svg class="platform-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="12" y="3" width="24" height="42" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 8h8M22 40h4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3"/></svg>
+          <span class="platform-status"><span class="status-check">✓</span><span>Выбрано</span></span>
+          <span class="platform-name">iPhone / iPad</span>
+        </button>
+        <button class="platform" type="button" data-platform="android" aria-pressed="false">
+          <svg class="platform-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m14.1 13.3-3.2-5.5a1.2 1.2 0 0 1 2.1-1.2l3.3 5.7A19.2 19.2 0 0 1 24 10.7c2.8 0 5.4.6 7.7 1.6L35 6.6a1.2 1.2 0 1 1 2.1 1.2l-3.2 5.5c5 3.1 8.4 8.2 8.9 14.2H5.2c.5-6 3.9-11.1 8.9-14.2ZM15.5 22a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm17 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM6 30h36v10a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5V30Z"/></svg>
+          <span class="platform-status"><span class="status-check">✓</span><span>Выбрано</span></span>
+          <span class="platform-name">Android</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="clients-heading">
+      <div class="section-head">
+        <div>
+          <span class="step">Шаг 02</span>
+          <h2 id="clients-heading">Выберите клиент</h2>
+        </div>
+        <p class="detected" id="clients-count" aria-live="polite"></p>
+      </div>
+      <div class="clients" id="clients"></div>
+      <div class="note">
+        <span class="note-icon">i</span>
+        <span>Скачивайте приложения только из официальных магазинов и репозиториев.</span>
+      </div>
+    </section>
+
+    <footer>
+      <span>Приложения предоставляются их разработчиками.</span>
+      <span>После установки добавьте ключ подписки в выбранный клиент.</span>
+    </footer>
+  </main>
+
+  <script>
+    const clients = [
+      {
+        id: 'happ', name: 'Happ', description: 'Простой и быстрый клиент для повседневного подключения.',
+        color: '#222d28', recommended: true,
+        links: {
+          windows: 'https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x64.exe',
+          macos: 'https://apps.apple.com/ru/app/happ-proxy-utility/id6783623643',
+          ios: 'https://apps.apple.com/ru/app/happ-proxy-utility/id6783623643',
+          android: 'https://play.google.com/store/apps/details?id=com.happproxy'
         }
-    </script>
+      },
+      {
+        id: 'incy', name: 'INCY', description: 'Современный кроссплатформенный клиент на базе Xray-core.',
+        color: '#6655e8',
+        links: {
+          windows: 'https://github.com/INCY-DEV/incy-platforms/releases/latest/download/incy-windows-setup.exe',
+          macos: 'https://apps.apple.com/ru/app/incy/id6756943388',
+          ios: 'https://apps.apple.com/ru/app/incy/id6756943388',
+          android: 'https://play.google.com/store/apps/details?id=llc.itdev.incy'
+        }
+      },
+      {
+        id: 'v2raytun', name: 'v2RayTun', description: 'Лёгкий мобильный клиент с поддержкой популярных протоколов.',
+        color: '#1977ed',
+        notes: {
+          macos: 'Может потребоваться Apple ID другого региона.',
+          ios: 'Может потребоваться Apple ID другого региона.'
+        },
+        links: {
+          macos: 'https://apps.apple.com/us/app/v2raytun/id6476628951',
+          ios: 'https://apps.apple.com/us/app/v2raytun/id6476628951',
+          android: 'https://play.google.com/store/apps/details?id=com.v2raytun.android'
+        }
+      },
+      {
+        id: 'karing', name: 'Karing', description: 'Гибкий open-source клиент с расширенными правилами маршрутизации.',
+        color: '#ef6d3f',
+        links: {
+          windows: 'https://github.com/KaringX/karing/releases/latest',
+          macos: 'https://apps.apple.com/ru/app/karing/id6472431552',
+          ios: 'https://apps.apple.com/ru/app/karing/id6472431552',
+          android: 'https://github.com/KaringX/karing/releases/latest'
+        }
+      },
+      {
+        id: 'shadowrocket', name: 'Shadowrocket', description: 'Популярный платный клиент для устройств Apple.',
+        color: '#ef4056',
+        links: {
+          macos: 'https://apps.apple.com/ru/app/shadowrocket/id932747118',
+          ios: 'https://apps.apple.com/ru/app/shadowrocket/id932747118'
+        }
+      }
+    ];
+
+    const platformNames = {
+      windows: 'Windows', macos: 'macOS', ios: 'iPhone / iPad', android: 'Android'
+    };
+
+    const sourceNames = {
+      windows: 'Скачать приложение', macos: 'Открыть App Store', ios: 'Открыть App Store', android: 'Скачать приложение'
+    };
+
+    function detectPlatform() {
+      const ua = navigator.userAgent || '';
+      const platform = navigator.userAgentData?.platform || navigator.platform || '';
+      const isIPad = platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+      if (/android/i.test(ua)) return 'android';
+      if (/iphone|ipad|ipod/i.test(ua) || isIPad) return 'ios';
+      if (/mac/i.test(platform)) return 'macos';
+      if (/win/i.test(platform)) return 'windows';
+      return 'windows';
+    }
+
+    const cards = document.getElementById('clients');
+    const buttons = [...document.querySelectorAll('.platform')];
+    const detected = detectPlatform();
+    let selected = new URLSearchParams(location.search).get('platform');
+
+    if (!platformNames[selected]) selected = detected;
+
+    function renderClients() {
+      const available = clients.filter(client => client.links[selected]);
+      cards.innerHTML = available.length ? available.map((client, index) => `
+        <article class="client" style="animation-delay:${index * 45}ms">
+          <div class="client-logo" style="--logo-bg:${client.color}">
+            <img src="assets/app-icons/${client.id}.jpg" alt="" width="512" height="512" loading="lazy">
+          </div>
+          <div class="client-body">
+            <div class="client-title-row">
+              <h3>${client.name}</h3>
+              ${client.recommended ? '<span class="badge">Рекомендуем</span>' : ''}
+            </div>
+            <p>
+              ${client.description}
+              ${client.notes?.[selected] ? `<br><span class="region-note">${client.notes[selected]}</span>` : ''}
+            </p>
+            <a class="download-link" href="${client.links[selected]}" target="_blank" rel="noopener noreferrer">
+              ${sourceNames[selected]}
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 15 15 5m-8 0h8v8"/></svg>
+            </a>
+          </div>
+        </article>
+      `).join('') : '<div class="empty">Для этой платформы пока нет доступных клиентов.</div>';
+
+      document.getElementById('clients-count').textContent = `${available.length} ${pluralize(available.length, ['клиент', 'клиента', 'клиентов'])} для ${platformNames[selected]}`;
+    }
+
+    function pluralize(number, words) {
+      const mod100 = number % 100;
+      const mod10 = number % 10;
+      if (mod100 >= 11 && mod100 <= 19) return words[2];
+      if (mod10 === 1) return words[0];
+      if (mod10 >= 2 && mod10 <= 4) return words[1];
+      return words[2];
+    }
+
+    function selectPlatform(platform, updateUrl = true) {
+      selected = platform;
+      buttons.forEach(button => {
+        const active = button.dataset.platform === selected;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      if (updateUrl) {
+        const url = new URL(location.href);
+        url.searchParams.set('platform', selected);
+        history.replaceState({}, '', url);
+      }
+      renderClients();
+    }
+
+    buttons.forEach(button => button.addEventListener('click', () => selectPlatform(button.dataset.platform)));
+    document.getElementById('detected-label').textContent = `Определено: ${platformNames[detected]}`;
+    selectPlatform(selected, false);
+  </script>
 </body>
 </html>
